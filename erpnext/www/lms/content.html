@@ -178,7 +178,38 @@
 	{% endif  %}
 	<script>
 		{% if content_type == 'Video' %}
+			const url = "{{ content.url }}"
+			let suburlsplit = url.indexOf('&amp;')!==-1?url.split('&amp;'):url.split('&;');
+			let start,end;
+			for(item of suburlsplit){
+				item = item.replace('=','')
+				if(item.indexOf('start') > -1){
+					start = item.replace('start','')
+				}else if(item.indexOf('end') > -1){
+					end = item.replace('end','')
+				}
+			}
+			function on_end(){
+				player.currentTime=start;
+				player.stop();
+			}
+
 			const player = new Plyr('#player');
+			
+			player.on('ready', event => {
+				const instance = event.detail.plyr;
+				instance.currentTime=parseInt(start);
+				
+			});
+			if(end && end > 0){
+				player.on('timeupdate', event => {
+					const instance = event.detail.plyr;
+					if(instance.currentTime > end){
+						instance.currentTime=start;
+						instance.stop();
+					}
+				});
+			}
 		{% elif content_type == 'Quiz' %}
 			{% if next %}
 			const quiz_exit_button = 'Next'
