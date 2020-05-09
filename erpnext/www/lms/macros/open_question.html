@@ -1,0 +1,100 @@
+{% macro open_question(name, question, index, length) %}
+ {# <small>- {{index}} {{_("of")}} {{length}}</small> #}
+<h6>
+	{{ _(question.question_type +" answer") }}
+</h6>
+<h4  class="text-right text-monospace"> {{_("Question")}}: {{ question.question }}</h4>
+
+{% if question.open_answer.answer %}
+<div class="blockquote bg-light" style="padding:33px;">
+	<h5 class="text-left">{{question.open_answer.answer}}</h5>
+	<br>
+	<p class="small text-muted text-right">{{_("Created On")}} {{frappe.format_date(question.open_answer.creation)}}</p>
+</div>
+{% else %}
+<div class="blockquote bg-light" style="padding:33px;">
+	<h5 id="{{index}}_openquiz-answer" class="text-center"></h5>
+</div>
+
+	<div id="{{index}}_openquiz-wrapper" class="container">
+		<div class="answer-form-wrapper">
+				<div id="{{index}}_answer-form">
+				<form action="">
+					<fieldset>
+						<p>
+							<textarea class="form-control" name="{{index}}_answer" rows=10 placeholder="{{ _('answer') }}"></textarea>
+						</p>
+							<button class="btn btn-primary btn-sm" id="{{index}}_submit-answer" style="margin-top:10px">{{ _("Save") }}</button>
+					</fieldset>
+				</form>
+			</div>
+		</div>
+	</div>
+{% endif %}
+
+<script>
+{% if content_type != 'Open Quiz' %}
+
+			frappe.ready(function() {
+                
+				var full_name = "", user_id = "";
+				if(frappe.is_user_logged_in()) {
+					full_name = frappe.get_cookie("full_name");
+					user_id = frappe.get_cookie("user_id");
+				} else {
+                    console.error('user not loged-in')
+                }
+
+
+				$("#{{index}}_submit-answer").click(function() {
+					var args = {
+						answer_by: full_name,
+						answer_email: user_id,
+						answer:$("[name='{{index}}_answer']").val(), // option
+						reference_doctype: "{{ question.doctype }}",
+						reference_name: "{{question.name}}",
+						answer_type: "{{ question.question_type }}",
+						route: String(location.pathname),
+						params:String(location.search),
+						parent_name: "{{name}}",
+						parent_doctype:'Open Quiz'
+					}
+
+					 {# if(!args.answer) {
+					 	frappe.msgprint("{{ _("You need to write an answer in the field.") }}");
+					 	return false;
+					 } #}
+// 
+					// if (args.answer_email!=='Administrator' && !validate_email(args.answer_email)) {
+					// 	frappe.msgprint("{{ _("Please enter a valid email address.") }}");
+					// 	return false;
+					// }
+
+					frappe.call({
+						btn: this,
+						type: "POST",
+						method: "erpnext.education.doctype.open_answer.open_answer.add_answer",
+						args: args,
+						callback: function(r) {
+							console.log(r)
+							if(r.exc) {
+								if(r._server_messages)
+									frappe.msgprint(r._server_messages);
+							} else {
+								frappe.msgprint('{{ _("Thank you for your answer.") }}');
+								$("#{{index}}_openquiz-wrapper").hide();
+								$("#{{index}}_openquiz-answer").append('<mark>'+args.answer+'</mark>');
+
+							}
+						}
+					})
+
+					return false;
+				})
+			})
+		{% endif %}
+        </script>
+		<style>
+
+		</style>
+{% endmacro %}

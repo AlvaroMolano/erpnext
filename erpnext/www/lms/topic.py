@@ -41,5 +41,13 @@ def get_contents(topic, course, program):
 					score = None
 					result = None
 				progress.append({'content': content, 'content_type': content.doctype, 'completed': status, 'score': score, 'result': result})
+			elif content.doctype == 'Open Quiz':
+				if student:
+					status, score, result = utils.check_quiz_completion(content, course_enrollment.name)
+				else:
+					status = False
+					score = None
+					result = None
+				progress.append({'content': content, 'content_type': content.doctype, 'completed': status, 'score': score, 'result': result})
 
 	return progress

@@ -43,6 +43,16 @@ def get_context(context):
 	# Set context for navigation
 	context.previous = get_previous_content(content_list, context.position)
 	context.next = get_next_content(content_list, context.position)
+	user = frappe.session.user
+
+	# is Open Question? go get answers
+	if context.content_type == 'Open Quiz' and len(context.content.question) > 0:
+		for index, item in enumerate(context.content.question):
+			if frappe.db.exists('Open Answer', {'parent': item.name, 'owner':user}):
+				context.content.question[index].open_answer = frappe.get_doc('Open Answer', {'owner':user, 'parent': item.name}).as_dict()
+				print(context.content.question[index].open_answer.answer)
+			pass
+
 
 def get_next_content(content_list, current_index):
 	try:
@@ -66,3 +76,9 @@ def allowed_content_access(program, content, content_type):
 			and `tabProgram Course`.parent = %(program)s""", {'program': program})
 
 	return (content, content_type) in contents_of_program
+
+def get_answers(reference_name):
+	user = frappe.session.user
+	if frappe.db.exists('Open Answer', {'parent': reference_name, 'owner':user}):
+		print('item in_db exists')
+		return frappe.get_doc('Open Answer', {'owner':user, 'parent': reference_name}).as_dict()

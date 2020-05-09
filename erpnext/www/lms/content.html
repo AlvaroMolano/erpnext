@@ -1,5 +1,7 @@
 {% extends "templates/base.html" %}
 {% block title %}{{ content.name or 'Content Page' }}{% endblock %}
+{% from "www/lms/macros/open_question.html" import open_question %}
+
 
 {% block head_include %}
 	<style>
@@ -132,6 +134,21 @@
 </div>
 {% endmacro %}
 
+{% macro openquiz() %}
+	<div class="mb-5">
+		<h2>{{_("Open Quiz")}}: {{content.name}}</h2>
+	</div>
+	<ol class="table table-striped" style="margin-bottom:90px;">
+		{% for question in content.question %}
+		<li>
+			<small class="muted-text">{{question.name}}</small>
+			{# {{question.docstatus == 0}} #}
+			<div class="embed-responsive-4by3 rounded border border-dark" style="padding:30px; margin:20px;">{{open_question(content.name, question, loop.index, content.question|length)}}</div>
+			</li>
+		{% endfor %}
+	</ol>
+{% endmacro %}
+
 {% block content %}
 <section class="section">
 	<div>
@@ -142,6 +159,8 @@
 				{{ article() }}
 			{% elif content_type=='Quiz' %}
 				{{ quiz() }}
+			{% elif content_type=='Open Quiz' %}
+				{{ openquiz() }}
 			{% endif %}
 			<div class="pull-right" {{ 'hidden' if content_type=='Quiz'}}>
 				{{ navigation() }}
@@ -179,6 +198,16 @@
 				window.quiz = quiz;
 			})
 		{% endif  %}
+
+		{% if content_type != 'Open Quiz' %}
+			{% if next %}
+				const quiz_exit_button = 'Next'
+				const next_url = '/lms/content?program={{ program }}&course={{ course }}&topic={{ topic }}&type={{ next.content_type }}&content={{ next.content }}'
+			{% else %}
+				const quiz_exit_button = 'Finish Course'
+				const next_url = '/lms/course?name={{ course }}&program={{ program }}'
+			{% endif %}
+		{% endif %}
 
 		{% if content_type != 'Quiz' %}
 
