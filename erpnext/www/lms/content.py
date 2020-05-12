@@ -1,7 +1,8 @@
 from __future__ import unicode_literals
 import erpnext.education.utils as utils
+from frappe.website.utils import get_comment_list
 import frappe
-
+from frappe import _
 no_cache = 1
 
 def get_context(context):
@@ -22,12 +23,16 @@ def get_context(context):
 	has_content_access = allowed_content_access(program, content, content_type)
 
 	if frappe.session.user == "Guest" or not has_program_access or not has_content_access:
-		frappe.local.flags.redirect_location = '/lms'
-		raise frappe.Redirect
+		not_authorised()
 
 
 	# Set context for content to be displayer
-	context.content = frappe.get_doc(content_type, content).as_dict()
+	_content = frappe.get_doc(content_type, content).as_dict()
+	if _content.published == 0:
+		not_authorised()
+
+	context.content = _content
+
 	context.content_type = content_type
 	context.program = program
 	context.course = course
@@ -43,6 +48,18 @@ def get_context(context):
 	# Set context for navigation
 	context.previous = get_previous_content(content_list, context.position)
 	context.next = get_next_content(content_list, context.position)
+	if context.content_type == 'Article' and context.content.allow_comments == 1:
+		context.reference_name =context.content.name
+		context.reference_doctype=context.content.doctype
+		context.comment_list = load_comments(context,context.content.doctype,context.content.name,frappe.session.user)
+
+def not_authorised():
+	_message = _("You may not be allowed to access this content")
+	frappe.publish_realtime('eval_js', _message, frappe.session.user)
+	frappe.msgprint('<pre>' + _message + '</pre>')
+
+	frappe.local.flags.redirect_location = '/lms'
+	raise frappe.Redirect
 
 def get_next_content(content_list, current_index):
 	try:
@@ -66,3 +83,7 @@ def allowed_content_access(program, content, content_type):
 			and `tabProgram Course`.parent = %(program)s""", {'program': program})
 
 	return (content, content_type) in contents_of_program
+
+def load_comments(context, doctype, name, user):
+	'''Load comments block'''
+	return get_comment_list(doctype, name)
