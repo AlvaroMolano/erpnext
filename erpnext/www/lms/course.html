@@ -42,7 +42,7 @@
 		{% if has_access %}
 			<a href="/lms/topic?program={{ program }}&course={{ course.name }}&topic={{ topic.name }}" class="no-decoration no-underline">
 		{% else %}
-			<a href="/login#login">
+			<a href="#" onclick="frappe.msgprint({title: __('Error'),indicator: 'red',message: __('You do not have access to this content')})">
 		{% endif %}
 			{% if topic.hero_image %}
 			<div class="card-hero-img" style="background-image: url('{{ topic.hero_image }}')"></div>
@@ -63,6 +63,7 @@
 								</a>
 							{% else %}
 								<span class="text-muted">{{ content.content }}</span>
+								<p>{{_("Restricted access")}}</p>
 							{% endif %}
 						</li>
 					{% endfor %}

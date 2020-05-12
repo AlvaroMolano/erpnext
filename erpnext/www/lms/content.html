@@ -157,6 +157,11 @@
 				{{ video() }}
 			{% elif content_type=='Article'%}
 				{{ article() }}
+				{% if content.allow_comments == 1 %}
+					<div class="my-3">
+						{% include "frappe/templates/includes/comments/comments.html" %}
+					</div>
+				{% endif %}
 			{% elif content_type=='Quiz' %}
 				{{ quiz() }}
 			{% elif content_type=='Open Quiz' %}

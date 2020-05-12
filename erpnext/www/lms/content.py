@@ -1,7 +1,8 @@
 from __future__ import unicode_literals
 import erpnext.education.utils as utils
+from frappe.website.utils import get_comment_list
 import frappe
-
+from frappe import _
 no_cache = 1
 
 def get_context(context):
@@ -22,12 +23,16 @@ def get_context(context):
 	has_content_access = allowed_content_access(program, content, content_type)
 
 	if frappe.session.user == "Guest" or not has_program_access or not has_content_access:
-		frappe.local.flags.redirect_location = '/lms'
-		raise frappe.Redirect
+		not_authorised()
 
 
 	# Set context for content to be displayer
-	context.content = frappe.get_doc(content_type, content).as_dict()
+	_content = frappe.get_doc(content_type, content).as_dict()
+	if _content.published == 0:
+		not_authorised()
+
+	context.content = _content
+
 	context.content_type = content_type
 	context.program = program
 	context.course = course
@@ -43,7 +48,8 @@ def get_context(context):
 	# Set context for navigation
 	context.previous = get_previous_content(content_list, context.position)
 	context.next = get_next_content(content_list, context.position)
-	user = frappe.session.user
+
+  user = frappe.session.user
 
 	# is Open Question? go get answers
 	if context.content_type == 'Open Quiz' and len(context.content.question) > 0:
@@ -53,6 +59,18 @@ def get_context(context):
 				print(context.content.question[index].open_answer.answer)
 			pass
 
+	if context.content_type == 'Article' and context.content.allow_comments == 1:
+		context.reference_name =context.content.name
+		context.reference_doctype=context.content.doctype
+		context.comment_list = load_comments(context,context.content.doctype,context.content.name,frappe.session.user)
+
+def not_authorised():
+	_message = _("You may not be allowed to access this content")
+	frappe.publish_realtime('eval_js', _message, frappe.session.user)
+	frappe.msgprint('<pre>' + _message + '</pre>')
+
+	frappe.local.flags.redirect_location = '/lms'
+	raise frappe.Redirect
 
 def get_next_content(content_list, current_index):
 	try:
@@ -77,8 +95,14 @@ def allowed_content_access(program, content, content_type):
 
 	return (content, content_type) in contents_of_program
 
+
 def get_answers(reference_name):
 	user = frappe.session.user
 	if frappe.db.exists('Open Answer', {'parent': reference_name, 'owner':user}):
 		print('item in_db exists')
 		return frappe.get_doc('Open Answer', {'owner':user, 'parent': reference_name}).as_dict()
+
+def load_comments(context, doctype, name, user):
+	'''Load comments block'''
+	return get_comment_list(doctype, name)
+
