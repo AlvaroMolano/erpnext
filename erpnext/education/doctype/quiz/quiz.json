@@ -1,6 +1,5 @@
 {
  "allow_import": 1,
- "allow_rename": 1,
  "autoname": "field:title",
  "creation": "2018-10-17 05:52:50.149904",
  "doctype": "DocType",
@@ -60,7 +59,7 @@
    "options": "Latest Highest Score\nLatest Attempt"
   }
  ],
- "modified": "2019-06-12 12:23:57.020508",
+ "modified": "2020-05-07 19:29:29.655770",
  "modified_by": "Administrator",
  "module": "Education",
  "name": "Quiz",
