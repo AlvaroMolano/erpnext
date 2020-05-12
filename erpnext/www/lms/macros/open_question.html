@@ -41,10 +41,7 @@
 				if(frappe.is_user_logged_in()) {
 					full_name = frappe.get_cookie("full_name");
 					user_id = frappe.get_cookie("user_id");
-				} else {
-                    console.error('user not loged-in')
-                }
-
+				}
 
 				$("#{{index}}_submit-answer").click(function() {
 					var args = {
@@ -60,10 +57,10 @@
 						parent_doctype:'Open Quiz'
 					}
 
-					 {# if(!args.answer) {
+					 if(!args.answer) {
 					 	frappe.msgprint("{{ _("You need to write an answer in the field.") }}");
 					 	return false;
-					 } #}
+					 }
 // 
 					// if (args.answer_email!=='Administrator' && !validate_email(args.answer_email)) {
 					// 	frappe.msgprint("{{ _("Please enter a valid email address.") }}");
