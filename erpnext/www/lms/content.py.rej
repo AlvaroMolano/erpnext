@@ -1,0 +1,32 @@
+diff a/erpnext/www/lms/content.py b/erpnext/www/lms/content.py	(rejected hunks)
+@@ -43,6 +48,18 @@ def get_context(context):
+ 	# Set context for navigation
+ 	context.previous = get_previous_content(content_list, context.position)
+ 	context.next = get_next_content(content_list, context.position)
++	if context.content_type == 'Article' and context.content.allow_comments == 1:
++		context.reference_name =context.content.name
++		context.reference_doctype=context.content.doctype
++		context.comment_list = load_comments(context,context.content.doctype,context.content.name,frappe.session.user)
++
++def not_authorised():
++	_message = _("You may not be allowed to access this content")
++	frappe.publish_realtime('eval_js', _message, frappe.session.user)
++	frappe.msgprint('<pre>' + _message + '</pre>')
++
++	frappe.local.flags.redirect_location = '/lms'
++	raise frappe.Redirect
+ 
+ def get_next_content(content_list, current_index):
+ 	try:
+@@ -65,4 +82,8 @@ def allowed_content_access(program, content, content_type):
+ 			and `tabTopic Content`.parent = `tabCourse Topic`.topic
+ 			and `tabProgram Course`.parent = %(program)s""", {'program': program})
+ 
+-	return (content, content_type) in contents_of_program
+\ No newline at end of file
++	return (content, content_type) in contents_of_program
++
++def load_comments(context, doctype, name, user):
++	'''Load comments block'''
++	return get_comment_list(doctype, name)
+\ No newline at end of file

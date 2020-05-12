@@ -1,0 +1,12 @@
+diff a/erpnext/www/lms/macros/card.html b/erpnext/www/lms/macros/card.html	(rejected hunks)
+@@ -15,8 +15,8 @@ <h5 class='card-title'>{{ program.program_name }}</h5>
+ 		</div>
+ 		{% if has_access or program.intro_video%}
+ 		<div class='card-footer'>
+-			{% if has_access %} <span class="indicator green">Enrolled</span>
+-			{% elif program.intro_video %} <span><a href="{{ program.intro_video }}" target="blank">Watch Intro</a></span>
++			{% if has_access %} <span class="indicator green">{{_('Enrolled')}}</span>
++			{% elif program.intro_video %} <span><a href="{{ program.intro_video }}" target="blank">{{_('Watch Intro')}}</a></span>
+ 			{% endif %}
+ 		</div>
+ 		{% endif %}

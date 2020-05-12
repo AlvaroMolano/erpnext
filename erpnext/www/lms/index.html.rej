@@ -1,0 +1,10 @@
+diff a/erpnext/www/lms/index.html b/erpnext/www/lms/index.html	(rejected hunks)
+@@ -45,7 +45,7 @@ <h1>{{ education_settings.portal_title }}</h1>
+ 		<p class='lead'>{{ education_settings.description }}</p>
+ 		<p class="mt-4">
+ 			{% if frappe.session.user == 'Guest' %}
+-				<a class="btn btn-primary btn-lg" href="'/login#signup'">Sign Up</a>
++				<a class="btn btn-primary btn-lg" href="'/login#signup'">{{_('Sign Up')}}</a>
+ 			{% endif %}
+ 		</p>
+ 	</div>

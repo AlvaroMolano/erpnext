@@ -1,0 +1,16 @@
+diff a/erpnext/www/lms/course.html b/erpnext/www/lms/course.html	(rejected hunks)
+@@ -72,11 +72,11 @@ <h5 class='card-title'>{{ topic.topic_name }}</h5>
+ 		{% if has_access %}
+ 			<div class='card-footer'>
+ 				{% if progress[topic.name].completed %}
+-					<span class="indicator green">Completed</span>
++					<span class="indicator green">{{_('Completed')}}</span>
+ 				{% elif progress[topic.name].started %}
+-					<span class="indicator orange">In Progress</span>
++					<span class="indicator orange">{{_('In Progress')}}</span>
+ 				{% else %}
+-					<span class="indicator blue">Start</span>
++					<span class="indicator blue">{{_('Start')}}</span>
+ 				{% endif %}
+ 			</div>
+ 			</a>
