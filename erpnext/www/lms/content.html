@@ -164,7 +164,10 @@
 				{% endif %}
 			{% elif content_type=='Quiz' %}
 				{{ quiz() }}
+			{% elif content_type=='Open Quiz' %}
+				{{ openquiz() }}
 			{% endif %}
+
 			<div class="pull-right" {{ 'hidden' if content_type=='Quiz'}}>
 				{{ navigation() }}
 			</div>

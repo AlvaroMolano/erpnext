@@ -27,12 +27,7 @@ def get_context(context):
 
 
 	# Set context for content to be displayer
-	_content = frappe.get_doc(content_type, content).as_dict()
-	if _content.published == 0:
-		not_authorised()
-
-	context.content = _content
-
+	context.content = frappe.get_doc(content_type, content).as_dict()
 	context.content_type = content_type
 	context.program = program
 	context.course = course
@@ -48,10 +43,16 @@ def get_context(context):
 	# Set context for navigation
 	context.previous = get_previous_content(content_list, context.position)
 	context.next = get_next_content(content_list, context.position)
-	if context.content_type == 'Article' and context.content.allow_comments == 1:
-		context.reference_name =context.content.name
-		context.reference_doctype=context.content.doctype
-		context.comment_list = load_comments(context,context.content.doctype,context.content.name,frappe.session.user)
+	user = frappe.session.user
+
+	# is Open Question? go get answers
+	if context.content_type == 'Open Quiz' and len(context.content.question) > 0:
+		for index, item in enumerate(context.content.question):
+			if frappe.db.exists('Open Answer', {'parent': item.name, 'owner':user}):
+				context.content.question[index].open_answer = frappe.get_doc('Open Answer', {'owner':user, 'parent': item.name}).as_dict()
+				print(context.content.question[index].open_answer.answer)
+			pass
+
 
 def not_authorised():
 	_message = _("You may not be allowed to access this content")
@@ -87,3 +88,9 @@ def allowed_content_access(program, content, content_type):
 def load_comments(context, doctype, name, user):
 	'''Load comments block'''
 	return get_comment_list(doctype, name)
+
+def get_answers(reference_name):
+	user = frappe.session.user
+	if frappe.db.exists('Open Answer', {'parent': reference_name, 'owner':user}):
+		print('item in_db exists')
+		return frappe.get_doc('Open Answer', {'owner':user, 'parent': reference_name}).as_dict()

@@ -23,7 +23,6 @@ def get_answers(answer_email, reference_doctype, reference_name):
 @frappe.whitelist(allow_guest=False)
 def add_answer(answer, answer_email, answer_by, reference_doctype, reference_name, answer_type, route, params, parent_name, parent_doctype):
 	if answer_email != frappe.session.user:
-		# TODO: Add to translation
 		frappe.msgprint(_('Please check your profile, and fill the gaps'))
 		return 'User did not match error'
 
@@ -72,7 +71,6 @@ def add_answer(answer, answer_email, answer_by, reference_doctype, reference_nam
 	if route:
 		frappe.clear_cache(route)
 
-	print('4. _______________________________ +++++++++++++++++++')
 	# except Exception:
 	# 	frappe.db.rollback()
 	# 	frappe.log_error(frappe.get_traceback())
