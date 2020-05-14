@@ -44,6 +44,12 @@ def get_context(context):
 	context.previous = get_previous_content(content_list, context.position)
 	context.next = get_next_content(content_list, context.position)
 	user = frappe.session.user
+	
+	#Prepare previous comments
+	if context.content_type == 'Article' and context.content.allow_comments == 1:
+		context.reference_name =context.content.name
+		context.reference_doctype=context.content.doctype
+		context.comment_list = load_comments(context,context.content.doctype,context.content.name,frappe.session.user)
 
 	# is Open Question? go get answers
 	if context.content_type == 'Open Quiz' and len(context.content.question) > 0:
