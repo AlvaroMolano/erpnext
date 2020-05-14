@@ -207,11 +207,11 @@
 
 		{% if content_type != 'Open Quiz' %}
 			{% if next %}
-				const quiz_exit_button = 'Next'
-				const next_url = '/lms/content?program={{ program }}&course={{ course }}&topic={{ topic }}&type={{ next.content_type }}&content={{ next.content }}'
+				const openquiz_exit_button = 'Next'
+				const opennext_url = '/lms/content?program={{ program }}&course={{ course }}&topic={{ topic }}&type={{ next.content_type }}&content={{ next.content }}'
 			{% else %}
-				const quiz_exit_button = 'Finish Course'
-				const next_url = '/lms/course?name={{ course }}&program={{ program }}'
+				const openquiz_exit_button = 'Finish Course'
+				const opennext_url = '/lms/course?name={{ course }}&program={{ program }}'
 			{% endif %}
 		{% endif %}
 
