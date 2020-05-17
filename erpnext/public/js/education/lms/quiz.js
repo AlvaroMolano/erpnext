@@ -35,10 +35,12 @@ class Quiz {
 		if (is_complete) {
 			this.disable()
 			let indicator = 'red'
-			let message = __('Your are not allowed to attempt the quiz again.')
+			//TODO: add translation: __('Your are not allowed to attempt the quiz again.')
+			let message = 'No puedes volver a rellenar este cuestioanario'
 			if (data.activity.result == 'Pass') {
 				indicator = 'green'
-				message = __('You have already cleared the quiz.')
+				//TODO: add translation: 'You have already cleared the quiz.'
+				message = 'Tu ya has rellenado este cuestionario'
 			}
 			this.set_quiz_footer(message, indicator, data.activity.score)
 		}
@@ -52,14 +54,16 @@ class Quiz {
 		button.classList.add("btn", "btn-primary", "mt-5", "mr-2");
 
 		button.id = 'submit-button';
-		button.innerText = 'Submit';
+		// TODO: add translation submit
+		button.innerText = 'Enviar';
 		button.onclick = () => this.submit();
 		this.submit_btn = button
 		this.wrapper.appendChild(button);
 	}
 
 	submit() {
-		this.submit_btn.innerText = 'Evaluating..'
+		//TODO: Add translation: 'Evaluating..'
+		this.submit_btn.innerText = 'Evaluando..'
 		this.submit_btn.disabled = true
 		this.disable()
 		frappe.call('erpnext.education.utils.evaluate_quiz', {
@@ -70,14 +74,17 @@ class Quiz {
 		}).then(res => {
 			this.submit_btn.remove()
 			if (!res.message) {
-				frappe.throw(__("Something went wrong while evaluating the quiz."))
+				//TODO: add translation: "Something went wrong while evaluating the quiz."
+				frappe.throw("Algo ha ido mal al evaluar el cuestionario")
 			}
 
 			let indicator = 'red'
-			let message = 'Fail'
+			// TODO: add translation Fail
+			let message = 'Suspendido'
 			if (res.message.status == 'Pass') {
 				indicator = 'green'
-				message = __('Congratulations, you cleared the quiz.')
+				//TODO: add translation : Congratulations, you cleared the quiz
+				message = 'Felicidades, completaste el cuestionario.'
 			}
 
 			this.set_quiz_footer(message, indicator, res.message.score)
