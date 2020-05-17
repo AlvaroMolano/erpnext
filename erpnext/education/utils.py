@@ -239,6 +239,45 @@ def get_quiz(quiz_name, course):
 	status, score, result = check_quiz_completion(quiz, course_enrollment)
 	return {'questions': questions, 'activity': {'is_complete': status, 'score': score, 'result': result}}
 
+@frappe.whitelist()
+def get_quiz_results(quiz_name, course):
+	try:
+		quiz = frappe.get_doc("Quiz", quiz_name)
+		questions = quiz.get_questions()
+	except:
+		frappe.throw(_("Quiz {0} does not exist".format(quiz_name)))
+		return None
+
+	questions = [{
+		'name': question.name,
+		'question': question.question,
+		'type': question.question_type,
+		'options': [{'name': option.name, 'option': option.option}
+					for option in question.options],
+		} for question in questions]
+
+
+
+	if has_super_access():
+		return {'questions': questions, 'activity': None}
+
+	student = get_current_student()
+	course_enrollment = get_enrollment("course", course, student.name)
+
+	status, score, result = check_quiz_completion(quiz, course_enrollment)
+
+	if status:
+		activities = frappe.get_all("Quiz Activity", filters={'enrollment': course_enrollment, 'quiz': quiz_name}, fields=["name", "activity_date", "score", "status", "quiz"])
+		results = frappe.get_all("Quiz Result", filters={'owner':student.owner, 'parent':activities[0].name}, fields={'name','creation','question','selected_option','quiz_result','idx'})
+		for result in results:
+			for q in questions:
+				if q['name'] == result.question:
+					q['_result'] = result
+					break
+				
+	return {'questions': questions, 'activity': {'is_complete': status, 'score': score, 'result': result}}
+
+
 def get_topic_progress(topic, course_name, program):
 	"""
 	Return the porgress of a course in a program as well as the content to continue from.

@@ -11,7 +11,7 @@ class Quiz {
 	}
 
 	get_quiz() {
-		frappe.call('erpnext.education.utils.get_quiz', {
+		frappe.call('erpnext.education.utils.get_quiz_results', {
 			quiz_name: this.name,
 			course: this.course
 		}).then(res => {
@@ -20,7 +20,9 @@ class Quiz {
 	}
 
 	make(data) {
+		let is_complete = (data.activity && data.activity.is_complete) ? true : false
 		data.questions.forEach(question_data => {
+			
 			let question_wrapper = document.createElement('div');
 			let question = new Question({
 				wrapper: question_wrapper,
@@ -29,15 +31,15 @@ class Quiz {
 			this.questions.push(question)
 			this.wrapper.appendChild(question_wrapper);
 		})
-		if (data.activity && data.activity.is_complete) {
+
+		if (is_complete) {
 			this.disable()
 			let indicator = 'red'
-			let message = 'Your are not allowed to attempt the quiz again.'
+			let message = __('Your are not allowed to attempt the quiz again.')
 			if (data.activity.result == 'Pass') {
 				indicator = 'green'
-				message = 'You have already cleared the quiz.'
+				message = __('You have already cleared the quiz.')
 			}
-
 			this.set_quiz_footer(message, indicator, data.activity.score)
 		}
 		else {
@@ -75,7 +77,7 @@ class Quiz {
 			let message = 'Fail'
 			if (res.message.status == 'Pass') {
 				indicator = 'green'
-				message = 'Congratulations, you cleared the quiz.'
+				message = __('Congratulations, you cleared the quiz.')
 			}
 
 			this.set_quiz_footer(message, indicator, res.message.score)
@@ -116,12 +118,14 @@ class Question {
 		Object.assign(this, opts);
 		this.make();
 	}
-
+	
 	make() {
 		this.make_question()
 		this.make_options()
 	}
-
+	is_multiple() {
+		return this.type == 'Multiple Correct Answer';
+	}
 	get_selected() {
 		let selected = this.options.filter(opt => opt.input.checked)
 		if (this.type == 'Single Correct Answer') {
@@ -145,41 +149,91 @@ class Question {
 	}
 
 	make_options() {
-		let make_input = (name, value) => {
+		let make_input = (name, value, marked, answer) => {
+			
 			let input = document.createElement('input');
 			input.id = name;
 			input.name = this.name;
 			input.value = value;
 			input.type = 'radio';
-			if (this.type == 'Multiple Correct Answer')
+			if (this.is_multiple()) {
 				input.type = 'checkbox';
+			}
+			if (marked) {
+				input.checked = true;
+				if(answer && answer == 'WRONG'){
+					input.indeterminate = true;
+				}
+			}
 			input.classList.add('form-check-input');
 			return input;
 		}
 
-		let make_label = function(name, value) {
+		let make_label = function (name, value, marked, answer) {
+			
 			let label = document.createElement('label');
 			label.classList.add('form-check-label');
+			
+			if (marked && answer){
+				if(answer == 'WRONG'){
+					label.classList.add('text-warning')
+				} else if (answer == 'OK'){
+					label.classList.add('text-success')	
+				}
+			}
 			label.htmlFor = name;
 			label.innerText = value;
 			return label
 		}
 
-		let make_option = function (wrapper, option) {
+
+		let make_option = function (wrapper, option, result, is_multiple) {
+			
+			let marked_option = false;
+			let selected_option = false;
+			let answer = undefined;
+			let quiz_result = undefined;
+			function isCorrect(_iterator){
+				quiz_result = result.quiz_result;
+				marked_option = (String(_iterator).trim().includes(String(option.option).trim())) ? true : false
+				
+				if (marked_option == true ){
+					if(quiz_result == 'Correct'){
+						answer='OK'
+					}else{
+						answer='WRONG'
+					}
+				}
+			}
+			if (result && result.selected_option){
+				selected_option = is_multiple ? result.selected_option.split(',') : result.selected_option
+				
+				if (is_multiple){
+					for (const iterator of selected_option) {
+						isCorrect(iterator)
+						}
+				} else {
+					isCorrect(selected_option)
+				}
+			}
+
 			let option_div = document.createElement('div')
 			option_div.classList.add('form-check', 'pb-1')
-			let input = make_input(option.name, option.option);
-			let label = make_label(option.name, option.option);
+			
+
+			let input = make_input(option.name, option.option, marked_option, answer);
+			let label = make_label(option.name, option.option, marked_option, answer);
 			option_div.appendChild(input)
 			option_div.appendChild(label)
 			wrapper.appendChild(option_div)
-			return {input: input, ...option}
+			return { input: input, ...option }
 		}
 
 		let options_wrapper = document.createElement('div')
 		options_wrapper.classList.add('ml-2')
 		let option_list = []
-		this.options.forEach(opt => option_list.push(make_option(options_wrapper, opt)))
+		let result = (this._result && this._result) ? this._result : null
+		this.options.forEach(opt => option_list.push(make_option(options_wrapper, opt, result, this.is_multiple())))
 		this.options = option_list
 		this.wrapper.appendChild(options_wrapper)
 	}

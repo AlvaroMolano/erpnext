@@ -187,10 +187,10 @@
 			const player = new Plyr('#player');
 		{% elif content_type == 'Quiz' %}
 			{% if next %}
-			const quiz_exit_button = 'Next'
+			const quiz_exit_button = __('Next')
 			const next_url = '/lms/content?program={{ program }}&course={{ course }}&topic={{ topic }}&type={{ next.content_type }}&content={{ next.content }}'
 			{% else %}
-			const quiz_exit_button = 'Finish Course'
+			const quiz_exit_button = __('Finish Course')
 			const next_url = '/lms/course?name={{ course }}&program={{ program }}'
 			{% endif %}
 			frappe.ready(() => {
@@ -207,10 +207,10 @@
 
 		{% if content_type != 'Open Quiz' %}
 			{% if next %}
-				const openquiz_exit_button = 'Next'
+				const openquiz_exit_button = __('Next')
 				const opennext_url = '/lms/content?program={{ program }}&course={{ course }}&topic={{ topic }}&type={{ next.content_type }}&content={{ next.content }}'
 			{% else %}
-				const openquiz_exit_button = 'Finish Course'
+				const openquiz_exit_button = __('Finish Course')
 				const opennext_url = '/lms/course?name={{ course }}&program={{ program }}'
 			{% endif %}
 		{% endif %}
