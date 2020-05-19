@@ -11,7 +11,7 @@ class Quiz {
 	}
 
 	get_quiz() {
-		frappe.call('erpnext.education.utils.get_quiz', {
+		frappe.call('erpnext.education.utils.get_quiz_results', {
 			quiz_name: this.name,
 			course: this.course
 		}).then(res => {
@@ -20,16 +20,18 @@ class Quiz {
 	}
 
 	make(data) {
+		let is_complete = (data.activity && data.activity.is_complete)?true:false;
+
 		data.questions.forEach(question_data => {
 			let question_wrapper = document.createElement('div');
 			let question = new Question({
-				wrapper: question_wrapper,
+				wrapper: question_wrapper, is_complete:is_complete,
 				...question_data
 			});
 			this.questions.push(question)
 			this.wrapper.appendChild(question_wrapper);
 		})
-		if (data.activity && data.activity.is_complete) {
+		if (is_complete) {
 			this.disable()
 			let indicator = 'red'
 			let message = 'Your are not allowed to attempt the quiz again.'
@@ -55,7 +57,7 @@ class Quiz {
 		this.submit_btn = button
 		this.wrapper.appendChild(button);
 	}
-
+	message
 	submit() {
 		this.submit_btn.innerText = 'Evaluating..'
 		this.submit_btn.disabled = true
@@ -97,10 +99,7 @@ class Quiz {
 
 		this.wrapper.appendChild(div)
 	}
-
-	disable() {
-		this.questions.forEach(que => que.disable())
-	}
+	
 
 	get_selected() {
 		let que = {}
@@ -145,19 +144,23 @@ class Question {
 	}
 
 	make_options() {
-		let make_input = (name, value) => {
+		let make_input = (name, value, marked) => {
 			let input = document.createElement('input');
 			input.id = name;
 			input.name = this.name;
 			input.value = value;
 			input.type = 'radio';
-			if (this.type == 'Multiple Correct Answer')
+			if (is_multiple()){
 				input.type = 'checkbox';
+			}
+			if (marked){
+				input.checked = true;
+			}
 			input.classList.add('form-check-input');
 			return input;
 		}
 
-		let make_label = function(name, value) {
+		let make_label = function(name, value, marked) {
 			let label = document.createElement('label');
 			label.classList.add('form-check-label');
 			label.htmlFor = name;
@@ -165,11 +168,22 @@ class Question {
 			return label
 		}
 
-		let make_option = function (wrapper, option) {
+		let is_multiple = function(){
+			return this.type == 'Multiple Correct Answer';
+		}
+		let make_option = function (wrapper, option, result) {
+			let selected_option = (is_multiple())?result.split(','):result;
+			let marked_option = false;
+			if(is_multiple())
+			for (const iterator of selected_option) {
+				marrked_option = (String(iterator).trim().includes(String(option.option).trim()))?true:false;
+				if(marked_option == true)
+				break;
+			}
 			let option_div = document.createElement('div')
 			option_div.classList.add('form-check', 'pb-1')
-			let input = make_input(option.name, option.option);
-			let label = make_label(option.name, option.option);
+			let input = make_input(option.name, option.option, marked_option);
+			let label = make_label(option.name, option.option, marked_option);
 			option_div.appendChild(input)
 			option_div.appendChild(label)
 			wrapper.appendChild(option_div)
@@ -179,8 +193,10 @@ class Question {
 		let options_wrapper = document.createElement('div')
 		options_wrapper.classList.add('ml-2')
 		let option_list = []
-		this.options.forEach(opt => option_list.push(make_option(options_wrapper, opt)))
+		let result = (this._result)?this._result:null;
+		this.options.forEach(opt => option_list.push(make_option(options_wrapper, opt, result)))
 		this.options = option_list
 		this.wrapper.appendChild(options_wrapper)
+
 	}
 }
