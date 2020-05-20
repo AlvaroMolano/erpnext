@@ -63,35 +63,53 @@ class CourseEnrollment(Document):
 			"status": status
 			}).insert(ignore_permissions = True)
 
+	def add_open_quiz_activity(self, student, open_question, open_quiz, doc_answer, result, score, status):
 
-	def add_open_quiz_activity(self, quiz_name, quiz_response, answer, score, status):
-		result_data = []
-		key = answer
+
+		result_data=[]
 #		for key in answers:
 		item = {}
-		item['question'] = key
+		item['question'] = open_quiz.name
 		item['quiz_result'] = "Waiting Review"
 		try:
-			if not quiz_response:
+			if not doc_answer.answer or doc_answer.answer == "":
 				item['selected_option'] = "Unattempted"
 				item['quiz_result'] = "Fail"
 			else:
-				item['selected_option'] = quiz_response[0]
+				item['selected_option'] = doc_answer.answer
 		except KeyError:
 			item['selected_option'] = "Unattempted"
 		result_data.append(item)
 
+
+		open_quiz_activity = None
+		is_new = False
+		if not frappe.db.exists('Open Quiz Activity', {"enrollment": self.name, "quiz": open_quiz.name}):
+			open_quiz_activity =  frappe.new_doc('Open Quiz Activity')
+			is_new = True
+		else:
+			open_quiz_activity = frappe.get_doc('Open Quiz Activity', {"enrollment": self.name, "quiz": open_quiz.name})
+
+
 		print('get open quiz activity')
-		open_quiz_activity = frappe.get_doc({
-			"doctype": "Open Quiz Activity",
+		open_quiz_activity.update({
+			#"doctype": "Open Quiz Activity",
 			"enrollment": self.name,
-			"quiz": quiz_name,
+			"student": student,
+			"open_quiz": open_quiz.name,
 			"activity_date": frappe.utils.datetime.datetime.now(),
 			"result": result_data,
 			"score": score,
-			"status": status
-			}).insert(ignore_permissions = True)
+			"status": status,
+			"course": self.course
+			})
+			
+		print(open_quiz_activity.get_doc_before_save())
 
+		if is_new:
+			open_quiz_activity.insert(ignore_permissions=True)
+		else:
+			open_quiz_activity.save(ignore_permissions=True)
 
 	def add_activity(self, content_type, content):
 		activity = check_activity_exists(self.name, content_type, content)
