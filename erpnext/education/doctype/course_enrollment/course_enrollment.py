@@ -63,8 +63,7 @@ class CourseEnrollment(Document):
 			"status": status
 			}).insert(ignore_permissions = True)
 
-	def add_open_quiz_activity(self, student, open_question, open_quiz, doc_answer, result, score, status):
-
+	def add_open_quiz_activity(self, open_question, open_quiz, doc_answer, result, score, status):
 
 		result_data=[]
 #		for key in answers:
@@ -81,21 +80,18 @@ class CourseEnrollment(Document):
 			item['selected_option'] = "Unattempted"
 		result_data.append(item)
 
-
 		open_quiz_activity = None
 		is_new = False
-		if not frappe.db.exists('Open Quiz Activity', {"enrollment": self.name, "quiz": open_quiz.name}):
+		if not frappe.db.exists('Open Quiz Activity', {"enrollment": self.name, "student": self.student, "open_quiz": open_quiz.name}):
 			open_quiz_activity =  frappe.new_doc('Open Quiz Activity')
 			is_new = True
 		else:
-			open_quiz_activity = frappe.get_doc('Open Quiz Activity', {"enrollment": self.name, "quiz": open_quiz.name})
+			open_quiz_activity = frappe.get_doc('Open Quiz Activity', {"enrollment": self.name, "student": self.student, "open_quiz": open_quiz.name})
 
-
-		print('get open quiz activity')
 		open_quiz_activity.update({
 			#"doctype": "Open Quiz Activity",
 			"enrollment": self.name,
-			"student": student,
+			"student": self.student,
 			"open_quiz": open_quiz.name,
 			"activity_date": frappe.utils.datetime.datetime.now(),
 			"result": result_data,
@@ -104,7 +100,7 @@ class CourseEnrollment(Document):
 			"course": self.course
 			})
 			
-		print(open_quiz_activity.get_doc_before_save())
+		print(open_quiz_activity.as_dict())
 
 		if is_new:
 			open_quiz_activity.insert(ignore_permissions=True)

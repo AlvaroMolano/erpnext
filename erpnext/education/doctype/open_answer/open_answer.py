@@ -76,7 +76,7 @@ def evaluate_open_question(doc_answer, parent_name, question_name, course, progr
 	if student:
 		enrollment = get_or_create_course_enrollment(course, program)
 		if open_quiz.allowed_attempt(enrollment, parent_name):
-			enrollment.add_open_quiz_activity(student, open_question, open_quiz, doc_answer, result, score, status)
+			enrollment.add_open_quiz_activity(open_question, open_quiz, doc_answer, result, score, status)
 			return {'result': result, 'score': score, 'status': status}
 		else:
 			return None

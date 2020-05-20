@@ -188,9 +188,7 @@ def add_activity(course, content_type, content, program):
 		return frappe.throw(_("Student with email {0} does not exist".format(frappe.session.user)), frappe.DoesNotExistError)
 
 	enrollment = get_or_create_course_enrollment(course, program)
-	if content_type == 'Quiz':
-		return
-	if content_type == 'Open Quiz':
+	if content_type == 'Quiz'or content_type == 'Open Quiz':
 		return
 	else:
 		return enrollment.add_activity(content_type, content)

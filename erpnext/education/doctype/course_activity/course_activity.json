@@ -48,7 +48,7 @@
    "fieldname": "content_type",
    "fieldtype": "Select",
    "label": "Content Type",
-   "options": "\nArticle\nVideo\nOpen Quiz",
+   "options": "\nArticle\nVideo\nQuiz\nOpen Quiz",
    "reqd": 1,
    "set_only_once": 1
   },

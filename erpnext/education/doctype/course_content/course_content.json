@@ -33,7 +33,7 @@
    "label": "Content Type", 
    "length": 0, 
    "no_copy": 0, 
-   "options": "\nArticle\nVideo\nQuiz", 
+   "options": "\nArticle\nVideo\nQuiz\nOpen Quiz", 
    "permlevel": 0, 
    "precision": "", 
    "print_hide": 0, 
