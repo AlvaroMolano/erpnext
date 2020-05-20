@@ -9,7 +9,6 @@ from frappe import _
 from frappe.model.document import Document
 
 class OpenQuiz(Document):
-
 	def validate(self):
 		if self.passing_score > 100:
 			frappe.throw(_("Passing Score value should be between 0 and 100"))
@@ -28,36 +27,15 @@ class OpenQuiz(Document):
 			return False
 
 
-	def evaluate(self, response_dict, quiz_name):
-		questions = [frappe.get_doc('Open Question', question.question_link) for question in self.question]
-		answers = {q.name:q.get_answer() for q in questions}
-		result = {}
-		for key in answers:
-			try:
-				if isinstance(response_dict[key], list):
-					is_correct = True #compare_list_elementwise(response_dict[key], answers[key])
-				else:
-					is_correct = (response_dict[key] == answers[key])
-			except Exception as e:
-				is_correct = False
-			result[key] = is_correct
-		score = (sum(result.values()) * 100 ) / len(answers)
-		if score >= self.passing_score:
-			status = "Pass"
-		else:
-			status = "Fail"
-		return result, score, status
-
-
 	def get_questions(self):
 		return [frappe.get_doc('Open Question', question.question_link) for question in self.question]
 
-def compare_list_elementwise(*args):
-	try:
-		if all(len(args[0]) == len(_arg) for _arg in args[1:]):
-			return all(all([element in (item) for element in args[0]]) for item in args[1:])
-		else:
-			return False
-	except TypeError:
-		frappe.throw(_("Compare List function takes on list arguments"))
+	def compare_list_elementwise(*args):
+		try:
+			if all(len(args[0]) == len(_arg) for _arg in args[1:]):
+				return all(all([element in (item) for element in args[0]]) for item in args[1:])
+			else:
+				return False
+		except TypeError:
+			frappe.throw(_("Compare List function takes on list arguments"))
 

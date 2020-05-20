@@ -64,23 +64,25 @@ class CourseEnrollment(Document):
 			}).insert(ignore_permissions = True)
 
 
-	def add_open_quiz_activity(self, quiz_name, quiz_response, answers, score, status):
+	def add_open_quiz_activity(self, quiz_name, quiz_response, answer, score, status):
 		result_data = []
-		for key in answers:
-			item = {}
-			item['question'] = key
-			item['quiz_result'] = "Waiting Review"
-			try:
-				if not quiz_response:
-					item['selected_option'] = "Unattempted"
-					item['quiz_result'] = "Fail"
-				else:
-					item['selected_option'] = frappe.get_value('Options', quiz_response, 'option')
-			except KeyError:
+		key = answer
+#		for key in answers:
+		item = {}
+		item['question'] = key
+		item['quiz_result'] = "Waiting Review"
+		try:
+			if not quiz_response:
 				item['selected_option'] = "Unattempted"
-			result_data.append(item)
+				item['quiz_result'] = "Fail"
+			else:
+				item['selected_option'] = quiz_response[0]
+		except KeyError:
+			item['selected_option'] = "Unattempted"
+		result_data.append(item)
 
-		quiz_activity = frappe.get_doc({
+		print('get open quiz activity')
+		open_quiz_activity = frappe.get_doc({
 			"doctype": "Open Quiz Activity",
 			"enrollment": self.name,
 			"quiz": quiz_name,

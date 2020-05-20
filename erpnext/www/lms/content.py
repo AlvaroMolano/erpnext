@@ -56,7 +56,6 @@ def get_context(context):
 		for index, item in enumerate(context.content.question):
 			if frappe.db.exists('Open Answer', {'parent': item.name, 'owner':user}):
 				context.content.question[index].open_answer = frappe.get_doc('Open Answer', {'owner':user, 'parent': item.name}).as_dict()
-				print(context.content.question[index].open_answer.answer)
 			pass
 
 
@@ -98,5 +97,4 @@ def load_comments(context, doctype, name, user):
 def get_answers(reference_name):
 	user = frappe.session.user
 	if frappe.db.exists('Open Answer', {'parent': reference_name, 'owner':user}):
-		print('item in_db exists')
 		return frappe.get_doc('Open Answer', {'owner':user, 'parent': reference_name}).as_dict()

@@ -143,7 +143,7 @@
 		<li>
 			<small class="muted-text">{{question.name}}</small>
 			{# {{question.docstatus == 0}} #}
-			<div class="embed-responsive-4by3 rounded border border-dark" style="padding:30px; margin:20px;">{{open_question(content.name, question, loop.index, content.question|length)}}</div>
+			<div class="embed-responsive-4by3 rounded border border-dark" style="padding:30px; margin:20px;">{{open_question(content.name, question, loop.index, content.question|length, program, course)}}</div>
 			</li>
 		{% endfor %}
 	</ol>

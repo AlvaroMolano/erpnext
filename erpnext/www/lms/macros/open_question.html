@@ -1,4 +1,4 @@
-{% macro open_question(name, question, index, length) %}
+{% macro open_question(name, question, index, length, program, course) %}
  {# <small>- {{index}} {{_("of")}} {{length}}</small> #}
 <h6>
 	{{ _(question.question_type +" answer") }}
@@ -57,7 +57,9 @@
 						route: String(location.pathname),
 						params:String(location.search),
 						parent_name: "{{name}}",
-						parent_doctype:'Open Quiz'
+						parent_doctype:'Open Question',
+						program: "{{program}}",
+						course: "{{course}}"
 					}
 
 					 {# if(!args.answer) {
@@ -76,7 +78,6 @@
 						method: "erpnext.education.doctype.open_answer.open_answer.add_answer",
 						args: args,
 						callback: function(r) {
-							console.log(r)
 							if(r.exc) {
 								if(r._server_messages)
 									frappe.msgprint(r._server_messages);
