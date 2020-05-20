@@ -266,6 +266,7 @@ def get_quiz_results(quiz_name, course):
 
 	status, score, result = check_quiz_completion(quiz, course_enrollment)
 
+	
 	if status:
 		activities = frappe.get_all("Quiz Activity", filters={'enrollment': course_enrollment, 'quiz': quiz_name}, fields=["name", "activity_date", "score", "status", "quiz"])
 		results = frappe.get_all("Quiz Result", filters={'owner':student.owner, 'parent':activities[0].name}, fields={'name','creation','question','selected_option','quiz_result','idx'})
