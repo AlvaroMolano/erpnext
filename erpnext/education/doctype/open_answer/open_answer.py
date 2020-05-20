@@ -3,7 +3,7 @@
 # For license information, please see license.txt
 
 from __future__ import unicode_literals
-# import frappe
+from erpnext.education.utils import get_or_create_course_enrollment, get_current_student, has_super_access
 from frappe.model.document import Document
 import frappe
 from frappe import _
@@ -97,3 +97,24 @@ def add_answer(answer, answer_email, answer_by, reference_doctype, reference_nam
 	# else:
 	# 	return ''
 	return 'OK'
+
+@frappe.whitelist()
+def evaluate_open_quiz(quiz_response, quiz_name, course, program):
+	import json
+
+	student = get_current_student()
+
+	quiz_response = json.loads(quiz_response)
+	quiz = frappe.get_doc("Open Quiz", quiz_name)
+	result, score, status = quiz.evaluate(quiz_response, quiz_name)
+
+	if has_super_access():
+		return {'result': result, 'score': score, 'status': status}
+
+	if student:
+		enrollment = get_or_create_course_enrollment(course, program)
+		if quiz.allowed_attempt(enrollment, quiz_name):
+			enrollment.add_open_quiz_activity(quiz_name, quiz_response, result, score, status)
+			return {'result': result, 'score': score, 'status': status}
+		else:
+			return None

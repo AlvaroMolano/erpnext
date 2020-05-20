@@ -190,6 +190,8 @@ def add_activity(course, content_type, content, program):
 	enrollment = get_or_create_course_enrollment(course, program)
 	if content_type == 'Quiz':
 		return
+	if content_type == 'Open Quiz':
+		return
 	else:
 		return enrollment.add_activity(content_type, content)
 
@@ -265,7 +267,6 @@ def get_quiz_results(quiz_name, course):
 	course_enrollment = get_enrollment("course", course, student.name)
 
 	status, score, result = check_quiz_completion(quiz, course_enrollment)
-
 	
 	if status:
 		activities = frappe.get_all("Quiz Activity", filters={'enrollment': course_enrollment, 'quiz': quiz_name}, fields=["name", "activity_date", "score", "status", "quiz"])
@@ -275,7 +276,7 @@ def get_quiz_results(quiz_name, course):
 				if q['name'] == result.question:
 					q['_result'] = result
 					break
-				
+
 	return {'questions': questions, 'activity': {'is_complete': status, 'score': score, 'result': result}}
 
 
