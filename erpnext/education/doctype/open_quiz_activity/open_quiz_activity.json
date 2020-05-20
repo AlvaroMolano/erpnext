@@ -57,7 +57,7 @@
    "fieldname": "quiz",
    "fieldtype": "Link",
    "in_list_view": 1,
-   "label": "Quiz",
+   "label": "Open Quiz",
    "options": "Open Quiz",
    "set_only_once": 1
   },
@@ -97,7 +97,7 @@
    "set_only_once": 1
   }
  ],
- "modified": "2020-05-20 10:47:52.631309",
+ "modified": "2020-05-20 18:38:40.521029",
  "modified_by": "Administrator",
  "module": "Education",
  "name": "Open Quiz Activity",

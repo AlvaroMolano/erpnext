@@ -31,7 +31,7 @@
   {
    "fieldname": "quiz_configuration_section",
    "fieldtype": "Section Break",
-   "label": "Quiz Configuration"
+   "label": "Open Quiz Configuration"
   },
   {
    "default": "75",

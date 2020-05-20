@@ -69,16 +69,14 @@ def evaluate_open_question(doc_answer, parent_name, question_name, course, progr
 	open_question = frappe.get_doc("Open Question", question_name)
 	open_quiz = frappe.get_doc("Open Quiz", parent_name)
 	result, score, status = open_question.evaluate(doc_answer, parent_name)
-	#result = [doc_answer.answer]
-	#score = 100
-	#status = 'Correct'
+
 	#if has_super_access():
 	#	return {'result': result, 'score': score, 'status': status}
 
 	if student:
 		enrollment = get_or_create_course_enrollment(course, program)
 		if open_quiz.allowed_attempt(enrollment, parent_name):
-			enrollment.add_open_quiz_activity(parent_name, doc_answer.answer, result, score, status)
+			enrollment.add_open_quiz_activity(student, open_question, open_quiz, doc_answer, result, score, status)
 			return {'result': result, 'score': score, 'status': status}
 		else:
 			return None
