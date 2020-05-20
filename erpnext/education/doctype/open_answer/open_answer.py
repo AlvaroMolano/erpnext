@@ -69,6 +69,8 @@ def evaluate_open_question(doc_answer, parent_name, question_name, course, progr
 	open_question = frappe.get_doc("Open Question", question_name)
 	open_quiz = frappe.get_doc("Open Quiz", parent_name)
 	result, score, status = open_question.evaluate(doc_answer, parent_name)
+	
+	# waiting for review <= doc_answer.is_correct
 
 	#if has_super_access():
 	#	return {'result': result, 'score': score, 'status': status}

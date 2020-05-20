@@ -65,42 +65,40 @@ class CourseEnrollment(Document):
 
 	def add_open_quiz_activity(self, open_question, open_quiz, doc_answer, result, score, status):
 
+		#conver doc_answer = Open Anser into => Open quiz result 
 		result_data=[]
-#		for key in answers:
-		item = {}
-		item['question'] = open_quiz.name
-		item['quiz_result'] = "Waiting Review"
-		try:
-			if not doc_answer.answer or doc_answer.answer == "":
-				item['selected_option'] = "Unattempted"
-				item['quiz_result'] = "Fail"
-			else:
-				item['selected_option'] = doc_answer.answer
-		except KeyError:
-			item['selected_option'] = "Unattempted"
-		result_data.append(item)
-
 		open_quiz_activity = None
 		is_new = False
 		if not frappe.db.exists('Open Quiz Activity', {"enrollment": self.name, "student": self.student, "open_quiz": open_quiz.name}):
 			open_quiz_activity =  frappe.new_doc('Open Quiz Activity')
+			open_quiz_activity.update({"activity_date": frappe.utils.datetime.datetime.now()})
 			is_new = True
 		else:
 			open_quiz_activity = frappe.get_doc('Open Quiz Activity', {"enrollment": self.name, "student": self.student, "open_quiz": open_quiz.name})
+			result_data = open_quiz_activity.result
+
+		item = frappe.new_doc('Open Quiz Result')
+		item.update({
+			"question":open_question.name,
+			"quiz_result":status,
+			"selected_option":doc_answer.answer,
+			"parenttype":"Open Quiz Activity"
+		})
+
+		result_data.append(item)
 
 		open_quiz_activity.update({
 			#"doctype": "Open Quiz Activity",
 			"enrollment": self.name,
 			"student": self.student,
 			"open_quiz": open_quiz.name,
-			"activity_date": frappe.utils.datetime.datetime.now(),
 			"result": result_data,
 			"score": score,
 			"status": status,
 			"course": self.course
 			})
-			
-		print(open_quiz_activity.as_dict())
+		#print(item.as_dict())
+		item.insert(ignore_permissions=True)
 
 		if is_new:
 			open_quiz_activity.insert(ignore_permissions=True)

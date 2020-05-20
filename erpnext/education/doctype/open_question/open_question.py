@@ -23,7 +23,7 @@ class OpenQuestion(Document):
 
 		score = result
 		if score >= 50:
-			status = "Pass"
+			status = "Waiting Review"
 		else:
 			status = "Fail"
 		return result, score, status
