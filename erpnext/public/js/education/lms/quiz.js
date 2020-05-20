@@ -25,7 +25,7 @@ class Quiz {
 			
 			let question_wrapper = document.createElement('div');
 			let question = new Question({
-				wrapper: question_wrapper, is_complete:is_complete,
+				wrapper: question_wrapper,
 				...question_data
 			});
 			this.questions.push(question)
@@ -60,7 +60,7 @@ class Quiz {
 		this.submit_btn = button
 		this.wrapper.appendChild(button);
 	}
-	message
+
 	submit() {
 		//TODO: Add translation: 'Evaluating..'
 		this.submit_btn.innerText = 'Evaluando..'
@@ -106,7 +106,10 @@ class Quiz {
 
 		this.wrapper.appendChild(div)
 	}
-	
+
+	disable() {
+		this.questions.forEach(que => que.disable())
+	}
 
 	get_selected() {
 		let que = {}
@@ -153,15 +156,14 @@ class Question {
 	}
 
 	make_options() {
-
 		let make_input = (name, value, marked, answer) => {
-						let input = document.createElement('input');
+			
+			let input = document.createElement('input');
 			input.id = name;
 			input.name = this.name;
 			input.value = value;
 			input.type = 'radio';
-
-			if (is_multiple()){
+			if (this.is_multiple()) {
 				input.type = 'checkbox';
 			}
 			if (marked) {
@@ -175,6 +177,7 @@ class Question {
 		}
 
 		let make_label = function (name, value, marked, answer) {
+			
 			let label = document.createElement('label');
 			label.classList.add('form-check-label');
 			
@@ -190,9 +193,6 @@ class Question {
 			return label
 		}
 
-		let is_multiple = function(){
-			return this.type == 'Multiple Correct Answer';
-		}
 
 		let make_option = function (wrapper, option, result, is_multiple) {
 			
@@ -243,6 +243,5 @@ class Question {
 		this.options.forEach(opt => option_list.push(make_option(options_wrapper, opt, result, this.is_multiple())))
 		this.options = option_list
 		this.wrapper.appendChild(options_wrapper)
-
 	}
 }
