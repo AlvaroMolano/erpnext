@@ -223,6 +223,10 @@ def get_data():
 				{
 					"type": "doctype",
 					"name": "Quiz"
+				},
+				{
+					"type": "doctype",
+					"name": "Open Quiz"
 				}
 			]
 		},
@@ -240,6 +244,10 @@ def get_data():
 				{
 					"type": "doctype",
 					"name": "Quiz Activity"
+				},
+				{
+					"type": "doctype",
+					"name": "Open Quiz Activity"
 				}
 			]
 		},

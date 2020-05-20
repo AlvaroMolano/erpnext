@@ -21,7 +21,7 @@ def get_data():
 			},
 			{
 				'label': _('Student LMS Activity'),
-				'items': ['Course Activity', 'Quiz Activity' ]
+				'items': ['Course Activity', 'Quiz Activity' , 'Open Quiz Activity' ]
 			},
 			{
 				'label': _('Attendance'),
