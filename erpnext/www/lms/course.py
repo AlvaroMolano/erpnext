@@ -23,5 +23,6 @@ def get_context(context):
 		context.progress = get_topic_progress(context.topics, course, context.program)
 		
 def get_topic_progress(topics, course, program):
+	#// -TODO: understand and fix, progress is null for none admins.
 	progress = {topic.name: utils.get_topic_progress(topic, course.name, program) for topic in topics}
 	return progress
