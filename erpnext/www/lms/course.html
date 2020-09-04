@@ -92,7 +92,9 @@
 <script type="text/javascript">
 	frappe.ready(function() {
 		 window['noAccess']=function (){
-			let _message = __('You do not have access to this content');
+			 //TODO: translation not working
+			// let _message = __('You do not have access to this content');
+			let _message = "No tienes accesso a este contenido, incríbete!"
 			return frappe.msgprint({title: 'Error', indicator: 'red',message: _message})
 		}
 	})
