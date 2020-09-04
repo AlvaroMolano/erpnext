@@ -108,9 +108,11 @@
 </section>
 {% endblock %}
 
-<script>
-function noAccess(){
-	let _message = __('You do not have access to this content');
-	return frappe.msgprint({title: 'Error', indicator: 'red',message: _message})
-}
-</script>
+{% block javascript %}
+    <script type="text/javascript">
+	function noAccess(){
+		let _message = __('You do not have access to this content');
+		return frappe.msgprint({title: 'Error', indicator: 'red',message: _message})
+	}
+	</script>
+{% endblock %}
