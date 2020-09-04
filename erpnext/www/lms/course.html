@@ -88,6 +88,16 @@
 		{% endif %}
 	</div>
 </div>
+
+<script type="text/javascript">
+	frappe.ready(function() {
+		function noAccess(){
+			let _message = __('You do not have access to this content');
+			return frappe.msgprint({title: 'Error', indicator: 'red',message: _message})
+		}
+	})
+</script>
+
 {% endmacro %}
 
 {% block content %}
@@ -106,15 +116,4 @@
 		</div>
 	</div>
 </section>
-{% endblock %}
-
-{% block javascript %}
-	<script type="text/javascript">
-		frappe.ready(function() {
-			function noAccess(){
-				let _message = __('You do not have access to this content');
-				return frappe.msgprint({title: 'Error', indicator: 'red',message: _message})
-			}
-		})
-	</script>
 {% endblock %}
