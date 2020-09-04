@@ -42,7 +42,7 @@
 		{% if has_access %}
 			<a href="/lms/topic?program={{ program }}&course={{ course.name }}&topic={{ topic.name }}" class="no-decoration no-underline">
 		{% else %}
-			<a href="#" onclick="frappe.msgprint({title: _('Error'),indicator: 'red',message: _('You do not have access to this content')})">
+			<a href="#" onclick="noAccess()">
 		{% endif %}
 			{% if topic.hero_image %}
 			<div class="card-hero-img" style="background-image: url('{{ topic.hero_image }}')"></div>
@@ -107,3 +107,10 @@
 	</div>
 </section>
 {% endblock %}
+
+<script>
+function noAccess(){
+	let _message = __('You do not have access to this content');
+	return frappe.msgprint({title: 'Error', indicator: 'red',message: _message})
+}
+</script>
